@@ -5,14 +5,14 @@ import (
 	"net/http"
 )
 
-func(app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request){
+func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
-		"status" : "ok",
-		"env": app.conf.env,
+		"status": "ok",
+		"env":    app.conf.env,
 	}
 
-	// if err:= app.jsonResponse(w, http.StatusOK, data); err != nil {
-	// 	return
-	// }
+	if err := app.jsonResponse(w, data, http.StatusOK); err != nil {
+		return
+	}
 	fmt.Println(data)
 }
