@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	rss "github.com/DivyanshuShekhar55/go-rss/internal/rssFeed"
 	"github.com/DivyanshuShekhar55/go-rss/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -13,25 +14,26 @@ import (
 )
 
 type application struct {
-		conf config
-		logger *zap.SugaredLogger
-		store store.Storage
-	}
-
-type config struct {
-		addr string
-		env  string
-		db dbConfig
-	}
-
-type dbConfig struct {
-	addr string
-	maxOpenConns int
-	maxIdleConns int
-	maxIdleTime string
+	conf   config
+	logger *zap.SugaredLogger
+	store  store.Storage
+	rss    rss.RSS
 }
 
-func (app *application) mount() http.Handler{
+type config struct {
+	addr string
+	env  string
+	db   dbConfig
+}
+
+type dbConfig struct {
+	addr         string
+	maxOpenConns int
+	maxIdleConns int
+	maxIdleTime  string
+}
+
+func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -41,7 +43,6 @@ func (app *application) mount() http.Handler{
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
-	
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.RealIP)
@@ -51,9 +52,8 @@ func (app *application) mount() http.Handler{
 	// processing should be stopped
 	r.Use(middleware.Timeout(60 * time.Second))
 
-
 	// use Group routing feature of chi
-	r.Route("/v1", func(r chi.Router){
+	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.HealthCheckHandler)
 	})
 	return r
