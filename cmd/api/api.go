@@ -55,6 +55,10 @@ func (app *application) mount() http.Handler {
 	// use Group routing feature of chi
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.HealthCheckHandler)
+
+		r.Route("/rss", func(r chi.Router) {
+			r.Get("/get", app.GetFeedHandler)
+		})
 	})
 	return r
 
