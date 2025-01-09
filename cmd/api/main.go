@@ -19,6 +19,12 @@ func main() {
 	app := &application{
 		conf:   cfg,
 		logger: logger,
+		db : dbConfig{
+			addr:"",
+			maxOpenConns: 30,
+			maxIdleConns: 30,
+			maxIdleTime: "15ms",
+		},
 	}
 
 	mux := app.mount()

@@ -14,6 +14,7 @@ import (
 type application struct {
 		conf config
 		logger *zap.SugaredLogger
+		db dbConfig
 	}
 
 type config struct {
@@ -21,6 +22,12 @@ type config struct {
 		env  string
 	}
 
+type dbConfig struct {
+	addr string
+	maxOpenConns int
+	maxIdleConns int
+	maxIdleTime string
+}
 
 func (app *application) mount() http.Handler{
 	r := chi.NewRouter()
