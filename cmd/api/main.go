@@ -11,6 +11,12 @@ func main() {
 	cfg := config{
 		addr: env.GetString("PORT", ":8080"),
 		env:  env.GetString("ENV", "dev"),
+		db: dbConfig{
+			addr:         env.GetString("DB_ADDR", ""),
+			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			maxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
+		},
 	}
 
 	logger := zap.Must(zap.NewProduction()).Sugar()
@@ -19,12 +25,6 @@ func main() {
 	app := &application{
 		conf:   cfg,
 		logger: logger,
-		db: dbConfig{
-			addr:         env.GetString("DB_ADDR", ""),
-			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
-			maxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
-			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
-		},
 	}
 
 	mux := app.mount()
