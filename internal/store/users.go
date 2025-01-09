@@ -66,4 +66,36 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 	return nil
 }
 
+func (s *UserStore) GetByID(ctx context.Context, userID int64) (*User, error) {
+	query := `
+		SELECT users.id, username, email, password, created_at
+		FROM users
+		WHERE users.id = $1
+	`
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	user := &User{}
+
+	err := s.db.QueryRowContext(
+		ctx,
+		query,
+		userID,
+	).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.CreatedAt,
+	)
+
+	if err != nil {
+		switch err {
+		// look for pgx errors
+		default:
+			return nil, err
+		}
+	}
+	return user, nil
+}
+
 
