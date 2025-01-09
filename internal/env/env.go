@@ -14,7 +14,7 @@ func init() {
 	}
 }
 
-func getString(key, fallback string) string {
+func GetString(key, fallback string) string {
 	val, err := os.LookupEnv(key)
 	if err {
 		return fallback
@@ -22,7 +22,7 @@ func getString(key, fallback string) string {
 	return val
 }
 
-func getInt(key string, fallback int) int {
+func GetInt(key string, fallback int) int {
 	val, err := os.LookupEnv(key)
 	if err {
 		return fallback
