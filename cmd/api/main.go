@@ -19,11 +19,11 @@ func main() {
 	app := &application{
 		conf:   cfg,
 		logger: logger,
-		db : dbConfig{
-			addr:"",
-			maxOpenConns: 30,
-			maxIdleConns: 30,
-			maxIdleTime: "15ms",
+		db: dbConfig{
+			addr:         env.GetString("DB_ADDR", ""),
+			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			maxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 	}
 
