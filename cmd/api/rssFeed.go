@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/xml"
+	"io"
 	"net/http"
 )
 
@@ -30,6 +32,34 @@ type Item struct {
 
 func (app *application) GetFeedHandler(w http.ResponseWriter, r *http.Request) {
 
+	resp, err := http.Get("https://dev.to/rss")
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "Couldn't send request")
+		return
+	}
 
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK{
+		writeJSONError(w, resp.StatusCode, "Failed to fetch rss feed")
+		return
+	}
+
+	// read the body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "failed to read response body")
+		return
+	}
+
+	// parse xml
+	var rss RSS
+	if err := xml.Unmarshal(body, &rss); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "faailed to parse rss feed")
+		return
+	}
+
+	// convert to json format
+	// todo
 
 }
