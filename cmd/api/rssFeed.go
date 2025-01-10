@@ -30,6 +30,19 @@ type Item struct {
 	PubDate string `xml:"pubDate"`
 }
 
+// structures for json response ...
+type FeedResponse struct {
+	Title string `json:"title"`
+	Articles []Article `json:"articles"`
+}
+
+type Article struct {
+	Title string `json:"title"`
+	Link string `json:"link"`
+	Description string `json:"description"`
+	PubDate string `json:"pubDate"`
+}
+
 func (app *application) GetFeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := http.Get("https://dev.to/rss")
