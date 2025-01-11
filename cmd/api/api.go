@@ -58,6 +58,10 @@ func (app *application) mount() http.Handler {
 		r.Route("/rss", func(r chi.Router) {
 			r.Get("/get", app.GetFeedHandler)
 		})
+
+		r.Route("/users", func(r chi.Router){
+			
+		})
 	})
 	return r
 
