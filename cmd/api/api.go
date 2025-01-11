@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	rss "github.com/DivyanshuShekhar55/go-rss/internal/rssFeed"
 	"github.com/DivyanshuShekhar55/go-rss/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,7 +16,7 @@ type application struct {
 	conf   config
 	logger *zap.SugaredLogger
 	store  store.Storage
-	rss    rss.RSS
+
 }
 
 type config struct {
@@ -58,6 +57,10 @@ func (app *application) mount() http.Handler {
 
 		r.Route("/rss", func(r chi.Router) {
 			r.Get("/get", app.GetFeedHandler)
+		})
+
+		r.Route("/users", func(r chi.Router){
+			
 		})
 	})
 	return r
