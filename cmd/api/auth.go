@@ -1,14 +1,35 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/DivyanshuShekhar55/go-rss/internal/store"
+)
+
+var validate *validator.Validate
 
 type RegisteredUserPayload struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,max=100"`
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=3,max=72"`
 }
 
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
+	validate = validator.New()
+
+	var payload RegisteredUserPayload
+	if err := readJSON(w, r, &payload); err !=nil{
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	// do some validation checks
+	if err:=validate.Struct(payload); err!=nil{
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
 
 }
 
