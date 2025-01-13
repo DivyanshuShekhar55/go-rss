@@ -73,4 +73,19 @@ type CreateUserTokenPayload struct {
 // LOGIN like system where we check the login details with the db details
 func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Request) {
 
+	// read the json body of payload
+	var payload CreateUserTokenPayload
+	if err := readJSON(w, r, &payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	// validate against the struct whether it is properly "formatted"
+	if err:= validate.Struct(payload); err != nil{
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	// the user payload is fine, can procced to check the user details against the db details
+
 }
