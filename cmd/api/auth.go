@@ -54,13 +54,23 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	ctx := r.Context()
+	//ctx := r.Context()
 
 	// generate the token, here if you want to have the functionality to activate the user via email sending
 	// put functionality of email, sending here if you want it
 
+	// CREATE the user in the db
+	// TODO
+
 }
 
+type CreateUserTokenPayload struct {
+	// note that the user id in the store has the json of id only not ID
+	ID       int64  `json:"id" validate:"required"`
+	Password string `json:"password" validate:"required,min=3,max=72"`
+}
+
+// LOGIN like system where we check the login details with the db details
 func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 }
