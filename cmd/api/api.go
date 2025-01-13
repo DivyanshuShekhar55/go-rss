@@ -34,6 +34,8 @@ type dbConfig struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
+	//following midddlewares will be used by all the routes
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -56,12 +58,22 @@ func (app *application) mount() http.Handler {
 		r.Get("/health", app.HealthCheckHandler)
 
 		r.Route("/rss", func(r chi.Router) {
+
+			// http://localhost:8.../v1/rss/get
 			r.Get("/get", app.GetFeedHandler)
 		})
 
 		r.Route("/users", func(r chi.Router){
-			
+			// public route activate/{token}
+			r.Put("/activate/{token}", app.activateUserHandler)
+
+			r.Route("/{userID}", func (r chi.Router){
+				// all the routes like .../users/{userID}/* should be authenticated protected
+				r.Use(app.AuthTokenMiddleware)
+				r.Get("/", app.getUserHandler)
+			})
 		})
+
 	})
 	return r
 
