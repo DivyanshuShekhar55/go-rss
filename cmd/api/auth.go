@@ -30,6 +30,20 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// user has been validated, all good in struct, can now try to put to db
+	user := &store.User{
+		Username: payload.Username,
+		Email:payload.Email,
+		// put the password after hashing it
+	}
+	
+	if err:= user.Password.Set(payload.Password); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	
+
 
 }
 
