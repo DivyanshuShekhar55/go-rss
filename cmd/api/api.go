@@ -46,6 +46,12 @@ type tokenConfig struct{
 	iss string
 }
 
+// will be used in jwt authentication 
+type authConfig struct{
+	basic basicConfig
+	token tokenConfig
+}
+
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
