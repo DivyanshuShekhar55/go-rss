@@ -132,4 +132,10 @@ func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Reques
 		app.internalServerError(w, r, err)
 	}
 
+	// TODO :
+	// now you might have to set the cookies with the token created right now
+	// with every request to protected resources from the browser, also send the token in auth headers (frontend work also)
+	// verify the token that is received from the browser (see jwt.go file in internals/auth)
+	// if token valid then grant access
+
 }
