@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/DivyanshuShekhar55/go-rss/internal/auth"
 	"github.com/DivyanshuShekhar55/go-rss/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -13,10 +14,10 @@ import (
 )
 
 type application struct {
-	conf   config
-	logger *zap.SugaredLogger
-	store  store.Storage
-
+	conf         config
+	logger       *zap.SugaredLogger
+	store        store.Storage
+	autheticator auth.Authenticator
 }
 
 type config struct {
@@ -30,6 +31,19 @@ type dbConfig struct {
 	maxOpenConns int
 	maxIdleConns int
 	maxIdleTime  string
+}
+
+// will be used in jwt authentication
+type basicConfig struct{
+	user string
+	pass string
+}
+
+// will be used in jwt authentication
+type tokenConfig struct{
+	secret string
+	exp time.Duration
+	iss string
 }
 
 func (app *application) mount() http.Handler {
@@ -63,11 +77,11 @@ func (app *application) mount() http.Handler {
 			r.Get("/get", app.GetFeedHandler)
 		})
 
-		r.Route("/users", func(r chi.Router){
+		r.Route("/users", func(r chi.Router) {
 			// public route activate/{token}
 			r.Put("/activate/{token}", app.activateUserHandler)
 
-			r.Route("/{userID}", func (r chi.Router){
+			r.Route("/{userID}", func(r chi.Router) {
 				// all the routes like .../users/{userID}/* should be authenticated protected
 				r.Use(app.AuthTokenMiddleware)
 				r.Get("/", app.getUserHandler)
