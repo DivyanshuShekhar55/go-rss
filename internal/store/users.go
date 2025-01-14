@@ -61,6 +61,8 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 	if err != nil {
 		switch {
 		// check for errors from pgx driver and do it
+		default:
+			return err
 		}
 	}
 	return nil
