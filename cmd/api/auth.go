@@ -56,13 +56,26 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//ctx := r.Context()
+	ctx := r.Context()
 
 	// generate the token, here if you want to have the functionality to activate the user via email sending
 	// put functionality of email, sending here if you want it
 
 	// CREATE the user in the db
-	// TODO
+	err := app.store.Users.CreateWithTx(ctx, user)
+	if err != nil {
+
+		// *** TODO : UNDERSTAND HOW THE ERR MADE BY US IN THE storage.go file IS GETTING CAUGHT HERE USING SWITCH ***
+		app.internalServerError(w, r, err)
+
+		// return in case of any err, note that the error above is only a logging from Zap library
+		return
+	}
+
+	// user has been created succesfully, send the json response now finally ...
+	if err := app.jsonResponse(w, user, http.StatusCreated); err != nil {
+		app.internalServerError(w, r, err)
+	}
 
 }
 
