@@ -18,6 +18,7 @@ type Storage struct {
 		GetByID(context.Context, int64) (*User, error)
 		Create(context.Context, *sql.Tx, *User) (*User, error)
 		Delete(context.Context, int64) error
+		CreateWithTx(context.Context, *User) error
 	}
 }
 
