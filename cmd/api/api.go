@@ -24,6 +24,7 @@ type config struct {
 	addr string
 	env  string
 	db   dbConfig
+	auth authConfig
 }
 
 type dbConfig struct {
