@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/DivyanshuShekhar55/go-rss/internal/auth"
 	"github.com/DivyanshuShekhar55/go-rss/internal/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -13,16 +14,17 @@ import (
 )
 
 type application struct {
-	conf   config
-	logger *zap.SugaredLogger
-	store  store.Storage
-
+	conf         config
+	logger       *zap.SugaredLogger
+	store        store.Storage
+	autheticator auth.Authenticator
 }
 
 type config struct {
 	addr string
 	env  string
 	db   dbConfig
+	auth authConfig
 }
 
 type dbConfig struct {
@@ -32,8 +34,29 @@ type dbConfig struct {
 	maxIdleTime  string
 }
 
+// will be used in jwt authentication
+type basicConfig struct{
+	user string
+	pass string
+}
+
+// will be used in jwt authentication
+type tokenConfig struct{
+	secret string
+	exp time.Duration
+	iss string
+}
+
+// will be used in jwt authentication 
+type authConfig struct{
+	basic basicConfig
+	token tokenConfig
+}
+
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
+	//following midddlewares will be used by all the routes
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -56,12 +79,28 @@ func (app *application) mount() http.Handler {
 		r.Get("/health", app.HealthCheckHandler)
 
 		r.Route("/rss", func(r chi.Router) {
+
+			// http://localhost:8.../v1/rss/get
 			r.Get("/get", app.GetFeedHandler)
 		})
 
-		r.Route("/users", func(r chi.Router){
-			
+		r.Route("/users", func(r chi.Router) {
+			// public route activate/{token}
+			r.Put("/activate/{token}", app.activateUserHandler)
+
+			r.Route("/{userID}", func(r chi.Router) {
+				// all the routes like .../users/{userID}/* should be authenticated protected
+				r.Use(app.AuthTokenMiddleware)
+				r.Get("/", app.getUserHandler)
+			})
 		})
+
+		// Public routes ...
+		r.Route("/authentication", func(r chi.Router) {
+			r.Post("/user", app.registerUserHandler)
+			r.Post("/token", app.createTokenHandler)
+		})
+
 	})
 	return r
 
