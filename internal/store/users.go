@@ -59,11 +59,12 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 	)
 
 	if err != nil {
-		switch {
-		// check for errors from pgx driver and do it
-		default:
-			return err
-		}
+		// switch {
+		// // check for errors from pgx driver and do it
+		// default:
+		// 	return err
+		// }
+		return err
 	}
 	return nil
 }
@@ -100,4 +101,12 @@ func (s *UserStore) GetByID(ctx context.Context, userID int64) (*User, error) {
 	return user, nil
 }
 
-
+// TODO : think of a better name when you understand what the func is actually doing
+func (s *UserStore) CreateWithTx(ctx context.Context, user *User) error {
+	return withTx(s.db, ctx, func(tx *sql.Tx) error {
+		if err := s.Create(ctx, tx, user); err != nil {
+			return err
+		}
+		return nil
+	})
+}
